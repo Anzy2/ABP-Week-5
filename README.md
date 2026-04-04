@@ -5,6 +5,8 @@
 
 ## COTS 2
 
+<img src="assets/logotelu.jpeg" alt ="logo" width = "300"> 
+
 ### Disusun Oleh
 **[Titanio Francy Naddiansa]**  
 [2311102289]  
@@ -971,25 +973,25 @@ Dengan demikian, seluruh fitur CRUD telah berjalan dengan baik dan sesuai dengan
 ## 7. Screenshot Website
 
 1. Tampilan Dashboard Awal  
-![Dashboard](assets/dashboard.png)
+![](assets/tampilandashboardawal.jpeg)
 
 2. Halaman Tambah Mahasiswa  
-![Form Tambah](assets/form-tambah.png)
+![](assets/tambahmahasiswa.jpeg)
 
 3. Halaman Data Mahasiswa (DataTables)  
-![Data Mahasiswa](assets/data-mahasiswa.png)
+![](assets/halamandataawal.jpeg)
 
-4. Modal Detail Mahasiswa  
-![Detail](assets/detail.png)
+4. Detail awal Mahasiswa  
+![](assets/detailawal.jpeg)
 
 5. Proses Edit Data  
-![Edit](assets/edit.png)
+![](assets/editdata.jpeg)
 
 6. Konfirmasi Hapus Data  
-![Hapus](assets/hapus.png)
+![](assets/hapusdata.jpeg)
 
 7. Halaman Statistik  
-![Statistik](assets/statistik.png)
+![](assets/halamanstatistikdihapus.jpeg)
 
 ---
 
@@ -1040,5 +1042,5 @@ Dengan demikian, aplikasi yang dibuat tidak hanya memenuhi seluruh persyaratan t
 
 ---
 
-## 10. Link Video Presentasi
-[Isi link video presentasi di sini]
+## 10. Link Gdrive
+[https://drive.google.com/drive/folders/1oOSQffoSW49_lcFSTZ1C25vm2YYmrc4Z?usp=sharing]
