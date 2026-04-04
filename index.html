@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SiMahasiswa — Sistem Informasi Mahasiswa</title>
+
+  <!-- Bootstrap 5 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/datatables.net-bs5@1.13.8/css/dataTables.bootstrap5.min.css"/>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --primary:    #1a56db;
+      --primary-dk: #1048b8;
+      --accent:     #f97316;
+      --dark:       #0f172a;
+      --surface:    #f8fafc;
+      --card:       #ffffff;
+      --border:     #e2e8f0;
+      --text:       #1e293b;
+      --muted:      #64748b;
+      --success:    #16a34a;
+      --danger:     #dc2626;
+      --warning:    #ca8a04;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--surface);
+      color: var(--text);
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    /* ── SIDEBAR ─────────────────────────────────────────── */
+    .sidebar {
+      position: fixed; top: 0; left: 0;
+      width: 260px; height: 100vh;
+      background: var(--dark);
+      display: flex; flex-direction: column;
+      z-index: 100;
+      transition: transform .3s ease;
+    }
+    .sidebar-brand {
+      padding: 28px 24px 20px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .sidebar-brand .logo-icon {
+      width: 40px; height: 40px;
+      background: var(--primary);
+      border-radius: 10px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 20px; color: #fff; margin-bottom: 10px;
+    }
+    .sidebar-brand h1 {
+      font-size: 17px; font-weight: 800; color: #fff; margin: 0;
+      letter-spacing: -.3px;
+    }
+    .sidebar-brand p { font-size: 11px; color: rgba(255,255,255,.4); margin: 2px 0 0; }
+
+    .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+    .nav-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+      color: rgba(255,255,255,.3); text-transform: uppercase;
+      padding: 8px 12px 6px; margin-top: 8px;
+    }
+    .sidebar-nav .nav-link {
+      display: flex; align-items: center; gap: 10px;
+      color: rgba(255,255,255,.6);
+      padding: 10px 14px; border-radius: 8px;
+      font-size: 14px; font-weight: 500;
+      transition: all .2s; cursor: pointer;
+      text-decoration: none; margin-bottom: 2px;
+    }
+    .sidebar-nav .nav-link i { font-size: 17px; width: 20px; text-align: center; }
+    .sidebar-nav .nav-link:hover { background: rgba(255,255,255,.08); color: #fff; }
+    .sidebar-nav .nav-link.active { background: var(--primary); color: #fff; }
+
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid rgba(255,255,255,.08);
+      font-size: 12px; color: rgba(255,255,255,.35);
+    }
+
+    /* ── TOPBAR ──────────────────────────────────────────── */
+    .topbar {
+      position: fixed; top: 0; left: 260px; right: 0; height: 64px;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 28px; z-index: 99;
+    }
+    .topbar-title { font-size: 16px; font-weight: 700; color: var(--text); }
+    .topbar-right { display: flex; align-items: center; gap: 16px; }
+    .avatar {
+      width: 36px; height: 36px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700; font-size: 14px;
+    }
+
+    /* ── MAIN CONTENT ────────────────────────────────────── */
+    .main-content {
+      margin-left: 260px;
+      margin-top: 64px;
+      padding: 28px;
+      min-height: calc(100vh - 64px);
+    }
+
+    /* ── PAGE SECTIONS ───────────────────────────────────── */
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+
+    /* ── STAT CARDS ──────────────────────────────────────── */
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px 24px;
+      position: relative; overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0;
+      width: 4px; height: 100%;
+    }
+    .stat-card.blue::before  { background: var(--primary); }
+    .stat-card.orange::before { background: var(--accent); }
+    .stat-card.green::before  { background: var(--success); }
+    .stat-card.purple::before { background: #7c3aed; }
+    .stat-card .stat-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; margin-bottom: 14px;
+    }
+    .stat-card.blue  .stat-icon { background: #dbeafe; color: var(--primary); }
+    .stat-card.orange .stat-icon { background: #ffedd5; color: var(--accent); }
+    .stat-card.green .stat-icon { background: #dcfce7; color: var(--success); }
+    .stat-card.purple .stat-icon { background: #ede9fe; color: #7c3aed; }
+    .stat-value { font-size: 30px; font-weight: 800; color: var(--text); line-height: 1; }
+    .stat-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+    /* ── TABLE CARD ──────────────────────────────────────── */
+    .card-panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .card-panel-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .card-panel-header h5 { margin: 0; font-size: 15px; font-weight: 700; }
+    .card-panel-body { padding: 20px 24px; }
+
+    /* ── FORM STYLES ─────────────────────────────────────── */
+    .form-label { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .form-control, .form-select {
+      border: 1.5px solid var(--border);
+      border-radius: 8px; padding: 10px 14px;
+      font-size: 14px; font-family: inherit;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(26,86,219,.12);
+    }
+    .required-mark { color: var(--danger); }
+
+    /* ── BUTTONS ─────────────────────────────────────────── */
+    .btn { font-family: inherit; font-weight: 600; border-radius: 8px; font-size: 14px; }
+    .btn-primary { background: var(--primary); border-color: var(--primary); }
+    .btn-primary:hover { background: var(--primary-dk); border-color: var(--primary-dk); }
+    .btn-sm { padding: 5px 12px; font-size: 12px; }
+
+    /* ── BADGE ───────────────────────────────────────────── */
+    .badge-prodi {
+      display: inline-block;
+      padding: 3px 10px; border-radius: 20px;
+      font-size: 11px; font-weight: 600;
+    }
+    .prodi-ti   { background: #dbeafe; color: var(--primary); }
+    .prodi-si   { background: #dcfce7; color: var(--success); }
+    .prodi-mi   { background: #ffedd5; color: var(--accent); }
+    .prodi-lain { background: #ede9fe; color: #7c3aed; }
+
+    /* ── TOAST ───────────────────────────────────────────── */
+    .toast-container { position: fixed; top: 80px; right: 24px; z-index: 9999; }
+
+    /* ── DATATABLE overrides ─────────────────────────────── */
+    table.dataTable thead th {
+      font-size: 12px; font-weight: 700; letter-spacing: .5px;
+      text-transform: uppercase; color: var(--muted);
+      background: #f8fafc; border-bottom: 2px solid var(--border) !important;
+    }
+    table.dataTable tbody td { font-size: 14px; vertical-align: middle; }
+    table.dataTable tbody tr:hover { background: #f8fafc; }
+    .dataTables_wrapper .dataTables_filter input {
+      border: 1.5px solid var(--border); border-radius: 8px; padding: 6px 12px;
+    }
+    .dataTables_wrapper .dataTables_length select {
+      border: 1.5px solid var(--border); border-radius: 8px; padding: 4px 8px;
+    }
+
+    /* ── MODAL ───────────────────────────────────────────── */
+    .modal-header { border-bottom: 1px solid var(--border); }
+    .modal-footer { border-top: 1px solid var(--border); }
+    .modal-title { font-weight: 700; font-size: 16px; }
+
+    /* ── PAGE HEADER ─────────────────────────────────────── */
+    .page-header { margin-bottom: 24px; }
+    .page-header h2 { font-size: 22px; font-weight: 800; margin: 0 0 4px; }
+    .page-header p { color: var(--muted); font-size: 14px; margin: 0; }
+
+    /* ── PROFILE CARD ────────────────────────────────────── */
+    .profile-avatar-lg {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 800; font-size: 24px;
+      margin-bottom: 12px;
+    }
+
+    /* ── CHART PLACEHOLDER ───────────────────────────────── */
+    .chart-bar-wrap {
+      display: flex; align-items: flex-end; gap: 10px;
+      height: 120px; padding-top: 16px;
+    }
+    .chart-bar-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .chart-bar {
+      width: 100%; border-radius: 6px 6px 0 0;
+      background: var(--primary); min-height: 4px;
+      transition: height .4s ease;
+    }
+    .chart-bar-label { font-size: 11px; color: var(--muted); font-weight: 600; }
+    .chart-bar-val { font-size: 12px; font-weight: 700; color: var(--text); }
+
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .topbar { left: 0; }
+      .main-content { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     SIDEBAR
+══════════════════════════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="logo-icon"><i class="bi bi-mortarboard-fill"></i></div>
+    <h1>SiMahasiswa</h1>
+    <p>Sistem Informasi Akademik</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-label">Utama</div>
+    <a class="nav-link active" onclick="navigate('dashboard')" id="nav-dashboard">
+      <i class="bi bi-grid-1x2-fill"></i> Dashboard
+    </a>
+
+    <div class="nav-label">Mahasiswa</div>
+    <a class="nav-link" onclick="navigate('tambah')" id="nav-tambah">
+      <i class="bi bi-person-plus-fill"></i> Tambah Mahasiswa
+    </a>
+    <a class="nav-link" onclick="navigate('data')" id="nav-data">
+      <i class="bi bi-table"></i> Data Mahasiswa
+    </a>
+
+    <div class="nav-label">Laporan</div>
+    <a class="nav-link" onclick="navigate('statistik')" id="nav-statistik">
+      <i class="bi bi-bar-chart-fill"></i> Statistik
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <i class="bi bi-info-circle me-1"></i> v1.0 &mdash; 2025 SiMahasiswa
+  </div>
+</aside>
+
+<!-- ══════════════════════════════════════════════════════════
+     TOPBAR
+══════════════════════════════════════════════════════════ -->
+<header class="topbar">
+  <div class="d-flex align-items-center gap-3">
+    <button class="btn btn-sm btn-light d-md-none" onclick="toggleSidebar()">
+      <i class="bi bi-list fs-5"></i>
+    </button>
+    <span class="topbar-title" id="topbar-title">Dashboard</span>
+  </div>
+  <div class="topbar-right">
+    <span class="d-none d-sm-inline text-muted" style="font-size:13px" id="clock"></span>
+    <div class="avatar">AD</div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════════════════════════════ -->
+<main class="main-content">
+
+  <!-- ─── HALAMAN 1: DASHBOARD ─────────────────────────── -->
+  <section class="page-section active" id="page-dashboard">
+    <div class="page-header">
+      <h2>Dashboard</h2>
+      <p>Selamat datang di Sistem Informasi Mahasiswa</p>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="row g-3 mb-4" id="stat-cards">
+      <div class="col-6 col-xl-3">
+        <div class="stat-card blue">
+          <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
+          <div class="stat-value" id="stat-total">0</div>
+          <div class="stat-label">Total Mahasiswa</div>
+        </div>
+      </div>
+      <div class="col-6 col-xl-3">
+        <div class="stat-card green">
+          <div class="stat-icon"><i class="bi bi-person-check-fill"></i></div>
+          <div class="stat-value" id="stat-aktif">0</div>
+          <div class="stat-label">Status Aktif</div>
+        </div>
+      </div>
+      <div class="col-6 col-xl-3">
+        <div class="stat-card orange">
+          <div class="stat-icon"><i class="bi bi-building"></i></div>
+          <div class="stat-value" id="stat-prodi">0</div>
+          <div class="stat-label">Program Studi</div>
+        </div>
+      </div>
+      <div class="col-6 col-xl-3">
+        <div class="stat-card purple">
+          <div class="stat-icon"><i class="bi bi-calendar3"></i></div>
+          <div class="stat-value" id="stat-angkatan">0</div>
+          <div class="stat-label">Angkatan</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <!-- Recent entries -->
+      <div class="col-lg-8">
+        <div class="card-panel">
+          <div class="card-panel-header">
+            <h5><i class="bi bi-clock-history me-2 text-primary"></i>Mahasiswa Terbaru</h5>
+            <button class="btn btn-sm btn-outline-primary" onclick="navigate('data')">Lihat Semua</button>
+          </div>
+          <div class="card-panel-body p-0">
+            <table class="table table-hover mb-0" id="recent-table">
+              <thead class="table-light">
+                <tr>
+                  <th style="padding:12px 20px">Nama</th>
+                  <th>NIM</th>
+                  <th>Prodi</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="recent-tbody">
+                <tr><td colspan="4" class="text-center text-muted py-4">Belum ada data</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="col-lg-4">
+        <div class="card-panel h-100">
+          <div class="card-panel-header">
+            <h5><i class="bi bi-lightning-fill me-2 text-warning"></i>Aksi Cepat</h5>
+          </div>
+          <div class="card-panel-body d-flex flex-column gap-2">
+            <button class="btn btn-primary w-100 text-start" onclick="navigate('tambah')">
+              <i class="bi bi-person-plus me-2"></i>Tambah Mahasiswa Baru
+            </button>
+            <button class="btn btn-outline-secondary w-100 text-start" onclick="navigate('data')">
+              <i class="bi bi-table me-2"></i>Lihat Semua Data
+            </button>
+            <button class="btn btn-outline-secondary w-100 text-start" onclick="navigate('statistik')">
+              <i class="bi bi-bar-chart me-2"></i>Lihat Statistik
+            </button>
+            <hr/>
+            <button class="btn btn-outline-danger w-100 text-start" onclick="confirmClearAll()">
+              <i class="bi bi-trash3 me-2"></i>Hapus Semua Data
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── HALAMAN 2: FORM TAMBAH / EDIT ────────────────── -->
+  <section class="page-section" id="page-tambah">
+    <div class="page-header">
+      <h2 id="form-page-title">Tambah Mahasiswa</h2>
+      <p id="form-page-sub">Isi formulir berikut untuk mendaftarkan mahasiswa baru</p>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card-panel">
+          <div class="card-panel-header">
+            <h5 id="form-card-title"><i class="bi bi-person-plus me-2 text-primary"></i>Formulir Data Mahasiswa</h5>
+          </div>
+          <div class="card-panel-body">
+            <form id="mahasiswaForm" novalidate>
+              <input type="hidden" id="editId"/>
+
+              <div class="row g-3">
+                <!-- NIM -->
+                <div class="col-md-6">
+                  <label class="form-label">NIM <span class="required-mark">*</span></label>
+                  <input type="text" class="form-control" id="nim" placeholder="Contoh: 2300001"
+                         maxlength="10" required/>
+                  <div class="invalid-feedback">NIM wajib diisi (maks. 10 karakter)</div>
+                </div>
+
+                <!-- Nama -->
+                <div class="col-md-6">
+                  <label class="form-label">Nama Lengkap <span class="required-mark">*</span></label>
+                  <input type="text" class="form-control" id="nama" placeholder="Nama lengkap mahasiswa" required/>
+                  <div class="invalid-feedback">Nama wajib diisi</div>
+                </div>
+
+                <!-- Email -->
+                <div class="col-md-6">
+                  <label class="form-label">Email <span class="required-mark">*</span></label>
+                  <input type="email" class="form-control" id="email" placeholder="email@example.com" required/>
+                  <div class="invalid-feedback">Email tidak valid</div>
+                </div>
+
+                <!-- No HP -->
+                <div class="col-md-6">
+                  <label class="form-label">No. HP</label>
+                  <input type="text" class="form-control" id="nohp" placeholder="08xxxxxxxxxx" maxlength="15"/>
+                </div>
+
+                <!-- Program Studi -->
+                <div class="col-md-6">
+                  <label class="form-label">Program Studi <span class="required-mark">*</span></label>
+                  <select class="form-select" id="prodi" required>
+                    <option value="">-- Pilih Prodi --</option>
+                    <option>Teknik Informatika</option>
+                    <option>Sistem Informasi</option>
+                    <option>Manajemen Informatika</option>
+                    <option>Ilmu Komputer</option>
+                    <option>Teknik Elektro</option>
+                  </select>
+                  <div class="invalid-feedback">Program studi wajib dipilih</div>
+                </div>
+
+                <!-- Angkatan -->
+                <div class="col-md-6">
+                  <label class="form-label">Angkatan <span class="required-mark">*</span></label>
+                  <select class="form-select" id="angkatan" required>
+                    <option value="">-- Pilih Angkatan --</option>
+                    <option>2020</option><option>2021</option><option>2022</option>
+                    <option>2023</option><option>2024</option><option>2025</option>
+                  </select>
+                  <div class="invalid-feedback">Angkatan wajib dipilih</div>
+                </div>
+
+                <!-- IPK -->
+                <div class="col-md-6">
+                  <label class="form-label">IPK</label>
+                  <input type="number" class="form-control" id="ipk" placeholder="0.00"
+                         min="0" max="4" step="0.01"/>
+                </div>
+
+                <!-- Status -->
+                <div class="col-md-6">
+                  <label class="form-label">Status <span class="required-mark">*</span></label>
+                  <select class="form-select" id="status" required>
+                    <option value="">-- Pilih Status --</option>
+                    <option>Aktif</option>
+                    <option>Cuti</option>
+                    <option>Lulus</option>
+                    <option>Drop Out</option>
+                  </select>
+                  <div class="invalid-feedback">Status wajib dipilih</div>
+                </div>
+
+                <!-- Alamat -->
+                <div class="col-12">
+                  <label class="form-label">Alamat</label>
+                  <textarea class="form-control" id="alamat" rows="3" placeholder="Alamat lengkap..."></textarea>
+                </div>
+              </div>
+
+              <!-- Buttons -->
+              <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-primary px-4" id="submitBtn">
+                  <i class="bi bi-check-lg me-1"></i><span id="submitBtnText">Simpan Data</span>
+                </button>
+                <button type="button" class="btn btn-outline-secondary px-4" onclick="resetForm()">
+                  <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+                </button>
+                <button type="button" class="btn btn-light ms-auto" onclick="navigate('data')">
+                  <i class="bi bi-arrow-left me-1"></i>Kembali ke Tabel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── HALAMAN 3: DATA TABEL ─────────────────────────── -->
+  <section class="page-section" id="page-data">
+    <div class="page-header d-flex justify-content-between align-items-start">
+      <div>
+        <h2>Data Mahasiswa</h2>
+        <p>Kelola seluruh data mahasiswa yang terdaftar</p>
+      </div>
+      <button class="btn btn-primary" onclick="navigate('tambah'); setFormMode('add')">
+        <i class="bi bi-plus-lg me-1"></i>Tambah Baru
+      </button>
+    </div>
+
+    <div class="card-panel">
+      <div class="card-panel-header">
+        <h5><i class="bi bi-table me-2 text-primary"></i>Daftar Mahasiswa</h5>
+        <div class="d-flex gap-2">
+          <button class="btn btn-sm btn-outline-success" onclick="exportJSON()">
+            <i class="bi bi-download me-1"></i>Export JSON
+          </button>
+        </div>
+      </div>
+      <div class="card-panel-body">
+        <div class="table-responsive">
+          <table id="dataMahasiswa" class="table table-hover w-100">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>NIM</th>
+                <th>Nama</th>
+                <th>Prodi</th>
+                <th>Angkatan</th>
+                <th>IPK</th>
+                <th>Status</th>
+                <th style="min-width:120px">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tabel-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── HALAMAN 4: STATISTIK ──────────────────────────── -->
+  <section class="page-section" id="page-statistik">
+    <div class="page-header">
+      <h2>Statistik</h2>
+      <p>Analisis distribusi data mahasiswa</p>
+    </div>
+
+    <div class="row g-3">
+      <!-- Per Prodi -->
+      <div class="col-md-6">
+        <div class="card-panel">
+          <div class="card-panel-header">
+            <h5><i class="bi bi-pie-chart-fill me-2 text-primary"></i>Distribusi per Prodi</h5>
+          </div>
+          <div class="card-panel-body" id="chart-prodi"></div>
+        </div>
+      </div>
+      <!-- Per Angkatan -->
+      <div class="col-md-6">
+        <div class="card-panel">
+          <div class="card-panel-header">
+            <h5><i class="bi bi-bar-chart-fill me-2 text-success"></i>Distribusi per Angkatan</h5>
+          </div>
+          <div class="card-panel-body" id="chart-angkatan"></div>
+        </div>
+      </div>
+      <!-- Per Status -->
+      <div class="col-md-6">
+        <div class="card-panel">
+          <div class="card-panel-header">
+            <h5><i class="bi bi-person-badge-fill me-2 text-warning"></i>Distribusi per Status</h5>
+          </div>
+          <div class="card-panel-body" id="chart-status"></div>
+        </div>
+      </div>
+      <!-- IPK Stats -->
+      <div class="col-md-6">
+        <div class="card-panel">
+          <div class="card-panel-header">
+            <h5><i class="bi bi-graph-up-arrow me-2 text-danger"></i>Ringkasan IPK</h5>
+          </div>
+          <div class="card-panel-body" id="ipk-stats"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main><!-- /main-content -->
+
+<!-- ══════════════════════════════════════════════════════════
+     MODAL DETAIL
+══════════════════════════════════════════════════════════ -->
+<div class="modal fade" id="detailModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-person-circle me-2"></i>Detail Mahasiswa</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="detailBody"></div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     MODAL HAPUS
+══════════════════════════════════════════════════════════ -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header border-danger">
+        <h5 class="modal-title text-danger"><i class="bi bi-trash3 me-2"></i>Konfirmasi Hapus</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-0">Yakin ingin menghapus data mahasiswa <strong id="delete-name"></strong>?</p>
+        <small class="text-muted">Tindakan ini tidak dapat dibatalkan.</small>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
+        <button class="btn btn-danger btn-sm" id="confirmDeleteBtn">Ya, Hapus</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════════════════════════ -->
+<!-- 1. jQuery HARUS pertama -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<!-- 2. Bootstrap JS (butuh jQuery) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- 3. DataTables core (butuh jQuery) -->
+<script src="https://cdn.jsdelivr.net/npm/datatables.net@1.13.8/js/jquery.dataTables.min.js"></script>
+<!-- 4. DataTables Bootstrap5 integration (butuh DataTables core) -->
+<script src="https://cdn.jsdelivr.net/npm/datatables.net-bs5@1.13.8/js/dataTables.bootstrap5.min.js"></script>
+<!-- 5. jQuery Validation Plugin -->
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.20.0/dist/jquery.validate.min.js"></script>
+
+<script>
+/* ──────────────────────────────────────────────────────────
+   DATA STORE (localStorage sebagai JSON database)
+────────────────────────────────────────────────────────── */
+const DB_KEY = 'simahasiswa_data';
+
+function loadData() {
+  try { return JSON.parse(localStorage.getItem(DB_KEY)) || []; }
+  catch { return []; }
+}
+
+function saveData(arr) {
+  localStorage.setItem(DB_KEY, JSON.stringify(arr));
+}
+
+function genId() {
+  return 'mhs_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
+}
+
+/* Seed data awal jika kosong */
+(function seedIfEmpty() {
+  if (loadData().length === 0) {
+    const seeds = [
+      { id: genId(), nim:'2300001', nama:'Ahmad Fauzi', email:'ahmad@student.ac.id', nohp:'081234567890', prodi:'Teknik Informatika', angkatan:'2023', ipk:'3.75', status:'Aktif', alamat:'Jl. Merdeka No. 1, Purwokerto', createdAt: new Date().toISOString() },
+      { id: genId(), nim:'2300002', nama:'Budi Santoso', email:'budi@student.ac.id', nohp:'082345678901', prodi:'Sistem Informasi', angkatan:'2023', ipk:'3.50', status:'Aktif', alamat:'Jl. Sudirman No. 5, Purwokerto', createdAt: new Date().toISOString() },
+      { id: genId(), nim:'2200015', nama:'Citra Dewi', email:'citra@student.ac.id', nohp:'083456789012', prodi:'Manajemen Informatika', angkatan:'2022', ipk:'3.90', status:'Aktif', alamat:'Jl. Diponegoro No. 10, Banyumas', createdAt: new Date().toISOString() },
+      { id: genId(), nim:'2100030', nama:'Doni Prasetyo', email:'doni@student.ac.id', nohp:'084567890123', prodi:'Teknik Informatika', angkatan:'2021', ipk:'2.80', status:'Cuti', alamat:'Jl. Veteran No. 7, Cilacap', createdAt: new Date().toISOString() },
+      { id: genId(), nim:'2000050', nama:'Eka Putri', email:'eka@student.ac.id', nohp:'085678901234', prodi:'Ilmu Komputer', angkatan:'2020', ipk:'3.20', status:'Lulus', alamat:'Jl. Ahmad Yani No. 3, Purbalingga', createdAt: new Date().toISOString() },
+    ];
+    saveData(seeds);
+  }
+})();
+
+/* ──────────────────────────────────────────────────────────
+   NAVIGATION
+────────────────────────────────────────────────────────── */
+const pageTitles = {
+  dashboard: 'Dashboard',
+  tambah:    'Tambah / Edit Mahasiswa',
+  data:      'Data Mahasiswa',
+  statistik: 'Statistik',
+};
+
+function navigate(page) {
+  // Sections
+  $('.page-section').removeClass('active');
+  $('#page-' + page).addClass('active');
+  // Nav links
+  $('.sidebar-nav .nav-link').removeClass('active');
+  $('#nav-' + page).addClass('active');
+  // Topbar title
+  $('#topbar-title').text(pageTitles[page] || page);
+
+  // Page-specific init
+  if (page === 'dashboard') refreshDashboard();
+  if (page === 'data')      refreshTable();
+  if (page === 'statistik') refreshStatistik();
+  if (page === 'tambah' && !$('#editId').val()) setFormMode('add');
+
+  // Close sidebar on mobile
+  $('#sidebar').removeClass('open');
+
+  window.scrollTo(0, 0);
+}
+
+function toggleSidebar() { $('#sidebar').toggleClass('open'); }
+
+/* ──────────────────────────────────────────────────────────
+   CLOCK
+────────────────────────────────────────────────────────── */
+function updateClock() {
+  const now = new Date();
+  $('#clock').text(now.toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit',second:'2-digit'}));
+}
+setInterval(updateClock, 1000); updateClock();
+
+/* ──────────────────────────────────────────────────────────
+   TOAST
+────────────────────────────────────────────────────────── */
+function showToast(msg, type = 'success') {
+  const icons = { success: 'check-circle-fill', danger: 'x-circle-fill', warning: 'exclamation-triangle-fill', info: 'info-circle-fill' };
+  const id = 'toast_' + Date.now();
+  const html = `
+    <div id="${id}" class="toast align-items-center text-bg-${type} border-0 shadow" role="alert">
+      <div class="d-flex align-items-center gap-2 p-3">
+        <i class="bi bi-${icons[type] || 'info-circle-fill'} fs-5"></i>
+        <div class="me-auto" style="font-size:14px;font-weight:600">${msg}</div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+      </div>
+    </div>`;
+  $('#toastContainer').append(html);
+  const el = document.getElementById(id);
+  const toast = new bootstrap.Toast(el, { delay: 3000 });
+  toast.show();
+  $(el).on('hidden.bs.toast', () => $(el).remove());
+}
+
+/* ──────────────────────────────────────────────────────────
+   PRODI BADGE HELPER
+────────────────────────────────────────────────────────── */
+function prodiBadge(prodi) {
+  const map = {
+    'Teknik Informatika': 'prodi-ti',
+    'Sistem Informasi': 'prodi-si',
+    'Manajemen Informatika': 'prodi-mi',
+  };
+  const cls = map[prodi] || 'prodi-lain';
+  return `<span class="badge-prodi ${cls}">${prodi}</span>`;
+}
+
+function statusBadge(s) {
+  const map = { 'Aktif':'success','Cuti':'warning','Lulus':'primary','Drop Out':'danger' };
+  return `<span class="badge bg-${map[s]||'secondary'}">${s}</span>`;
+}
+
+/* ──────────────────────────────────────────────────────────
+   DASHBOARD
+────────────────────────────────────────────────────────── */
+function refreshDashboard() {
+  const data = loadData();
+  $('#stat-total').text(data.length);
+  $('#stat-aktif').text(data.filter(d => d.status === 'Aktif').length);
+  $('#stat-prodi').text([...new Set(data.map(d => d.prodi))].length);
+  $('#stat-angkatan').text([...new Set(data.map(d => d.angkatan))].length);
+
+  // Recent 5
+  const recent = [...data].reverse().slice(0, 5);
+  const tbody = $('#recent-tbody');
+  tbody.empty();
+  if (recent.length === 0) {
+    tbody.html('<tr><td colspan="4" class="text-center text-muted py-4">Belum ada data</td></tr>');
+    return;
+  }
+  recent.forEach(m => {
+    tbody.append(`<tr>
+      <td style="padding:10px 20px;font-weight:600">${m.nama}</td>
+      <td><code style="font-size:12px">${m.nim}</code></td>
+      <td>${prodiBadge(m.prodi)}</td>
+      <td>${statusBadge(m.status)}</td>
+    </tr>`);
+  });
+}
+
+/* ──────────────────────────────────────────────────────────
+   DATATABLE
+────────────────────────────────────────────────────────── */
+let dtInstance = null;
+
+function refreshTable() {
+  // Safety check: pastikan DataTables sudah ter-load
+  if (typeof $.fn.DataTable === 'undefined') {
+    console.error('DataTables belum ter-load!');
+    $('#tabel-body').html('<tr><td colspan="8" class="text-center text-danger py-4"><i class="bi bi-exclamation-triangle me-2"></i>Gagal memuat DataTables. Periksa koneksi internet.</td></tr>');
+    return;
+  }
+
+  const data = loadData();
+
+  // DataTables JSON format
+  const jsonData = data.map((m, i) => ({
+    no:       i + 1,
+    id:       m.id,
+    nim:      m.nim,
+    nama:     m.nama,
+    prodi:    m.prodi,
+    angkatan: m.angkatan,
+    ipk:      m.ipk || '-',
+    status:   m.status,
+  }));
+
+  if (dtInstance) {
+    dtInstance.destroy();
+    $('#tabel-body').empty();
+  }
+
+  dtInstance = $('#dataMahasiswa').DataTable({
+    data: jsonData,              // ← Data format JSON
+    columns: [
+      { data: 'no' },
+      { data: 'nim', render: d => `<code style="font-size:12px">${d}</code>` },
+      { data: 'nama', render: d => `<span style="font-weight:600">${d}</span>` },
+      { data: 'prodi', render: prodiBadge },
+      { data: 'angkatan' },
+      { data: 'ipk' },
+      { data: 'status', render: statusBadge },
+      {
+        data: 'id',
+        orderable: false,
+        render: (id, _, row) => `
+          <div class="d-flex gap-1">
+            <button class="btn btn-sm btn-outline-info" title="Detail" onclick="showDetail('${id}')">
+              <i class="bi bi-eye"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-primary" title="Edit" onclick="editMahasiswa('${id}')">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger" title="Hapus" onclick="promptDelete('${id}','${row.nama}')">
+              <i class="bi bi-trash3"></i>
+            </button>
+          </div>`
+      }
+    ],
+    language: {
+      url: 'https://cdn.datatables.net/plug-ins/1.13.8/i18n/id.json',
+      emptyTable: 'Belum ada data mahasiswa',
+      zeroRecords: 'Data tidak ditemukan',
+    },
+    pageLength: 10,
+    responsive: true,
+    order: [[0, 'asc']],
+  });
+}
+
+/* ──────────────────────────────────────────────────────────
+   CRUD: CREATE / UPDATE
+────────────────────────────────────────────────────────── */
+function setFormMode(mode) {
+  if (mode === 'add') {
+    $('#editId').val('');
+    $('#form-page-title').text('Tambah Mahasiswa');
+    $('#form-page-sub').text('Isi formulir berikut untuk mendaftarkan mahasiswa baru');
+    $('#form-card-title').html('<i class="bi bi-person-plus me-2 text-primary"></i>Formulir Data Mahasiswa');
+    $('#submitBtnText').text('Simpan Data');
+    resetForm();
+  }
+}
+
+function resetForm() {
+  $('#mahasiswaForm')[0].reset();
+  $('#mahasiswaForm').removeClass('was-validated');
+  $('#editId').val('');
+}
+
+// jQuery Validate setup
+$(function () {
+  $('#mahasiswaForm').validate({
+    rules: {
+      nim:      { required: true, maxlength: 10 },
+      nama:     { required: true },
+      email:    { required: true, email: true },
+      prodi:    { required: true },
+      angkatan: { required: true },
+      status:   { required: true },
+    },
+    messages: {
+      nim:   { required: 'NIM wajib diisi', maxlength: 'Maks. 10 karakter' },
+      nama:  { required: 'Nama wajib diisi' },
+      email: { required: 'Email wajib diisi', email: 'Format email tidak valid' },
+      prodi: { required: 'Prodi wajib dipilih' },
+      angkatan: { required: 'Angkatan wajib dipilih' },
+      status: { required: 'Status wajib dipilih' },
+    },
+    errorClass: 'is-invalid',
+    validClass: 'is-valid',
+    errorElement: 'div',
+    errorPlacement: function (error, el) {
+      error.addClass('invalid-feedback');
+      el.after(error);
+    },
+    highlight: function (el) { $(el).addClass('is-invalid').removeClass('is-valid'); },
+    unhighlight: function (el) { $(el).removeClass('is-invalid').addClass('is-valid'); },
+    submitHandler: function () {
+      const id = $('#editId').val();
+      const obj = {
+        nim:      $('#nim').val().trim(),
+        nama:     $('#nama').val().trim(),
+        email:    $('#email').val().trim(),
+        nohp:     $('#nohp').val().trim(),
+        prodi:    $('#prodi').val(),
+        angkatan: $('#angkatan').val(),
+        ipk:      $('#ipk').val(),
+        status:   $('#status').val(),
+        alamat:   $('#alamat').val().trim(),
+      };
+
+      let data = loadData();
+
+      if (id) {
+        // UPDATE
+        const idx = data.findIndex(d => d.id === id);
+        if (idx !== -1) {
+          data[idx] = { ...data[idx], ...obj };
+          saveData(data);
+          showToast(`Data <strong>${obj.nama}</strong> berhasil diperbarui!`);
+        }
+      } else {
+        // CREATE — cek duplikat NIM
+        if (data.find(d => d.nim === obj.nim)) {
+          showToast('NIM sudah terdaftar! Gunakan NIM lain.', 'danger');
+          return;
+        }
+        obj.id = genId();
+        obj.createdAt = new Date().toISOString();
+        data.push(obj);
+        saveData(data);
+        showToast(`Mahasiswa <strong>${obj.nama}</strong> berhasil ditambahkan!`);
+      }
+
+      resetForm();
+      navigate('data');
+    }
+  });
+});
+
+/* ──────────────────────────────────────────────────────────
+   CRUD: READ – Detail
+────────────────────────────────────────────────────────── */
+function showDetail(id) {
+  const m = loadData().find(d => d.id === id);
+  if (!m) return;
+
+  const initial = m.nama.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  $('#detailBody').html(`
+    <div class="text-center mb-3">
+      <div class="profile-avatar-lg mx-auto">${initial}</div>
+      <h5 class="mb-1 fw-bold">${m.nama}</h5>
+      <div>${statusBadge(m.status)}</div>
+    </div>
+    <table class="table table-sm table-borderless">
+      <tr><td class="text-muted fw-600" style="width:130px;font-size:13px">NIM</td><td><code>${m.nim}</code></td></tr>
+      <tr><td class="text-muted" style="font-size:13px">Email</td><td>${m.email}</td></tr>
+      <tr><td class="text-muted" style="font-size:13px">No. HP</td><td>${m.nohp || '-'}</td></tr>
+      <tr><td class="text-muted" style="font-size:13px">Prodi</td><td>${prodiBadge(m.prodi)}</td></tr>
+      <tr><td class="text-muted" style="font-size:13px">Angkatan</td><td><strong>${m.angkatan}</strong></td></tr>
+      <tr><td class="text-muted" style="font-size:13px">IPK</td><td><strong>${m.ipk || '-'}</strong></td></tr>
+      <tr><td class="text-muted" style="font-size:13px">Alamat</td><td>${m.alamat || '-'}</td></tr>
+      <tr><td class="text-muted" style="font-size:13px">Didaftarkan</td>
+          <td>${new Date(m.createdAt).toLocaleDateString('id-ID', {dateStyle:'long'})}</td></tr>
+    </table>
+    <div class="d-flex gap-2 mt-3">
+      <button class="btn btn-outline-primary btn-sm" onclick="$('#detailModal').modal('hide');editMahasiswa('${m.id}')">
+        <i class="bi bi-pencil me-1"></i>Edit Data
+      </button>
+    </div>
+  `);
+  new bootstrap.Modal('#detailModal').show();
+}
+
+/* ──────────────────────────────────────────────────────────
+   CRUD: UPDATE – Fill Form
+────────────────────────────────────────────────────────── */
+function editMahasiswa(id) {
+  const m = loadData().find(d => d.id === id);
+  if (!m) return;
+
+  navigate('tambah');
+  $('#editId').val(m.id);
+  $('#nim').val(m.nim);
+  $('#nama').val(m.nama);
+  $('#email').val(m.email);
+  $('#nohp').val(m.nohp);
+  $('#prodi').val(m.prodi);
+  $('#angkatan').val(m.angkatan);
+  $('#ipk').val(m.ipk);
+  $('#status').val(m.status);
+  $('#alamat').val(m.alamat);
+
+  $('#form-page-title').text('Edit Mahasiswa');
+  $('#form-page-sub').text(`Mengubah data: ${m.nama}`);
+  $('#form-card-title').html('<i class="bi bi-pencil me-2 text-warning"></i>Edit Data Mahasiswa');
+  $('#submitBtnText').text('Perbarui Data');
+  $('#mahasiswaForm').removeClass('was-validated');
+}
+
+/* ──────────────────────────────────────────────────────────
+   CRUD: DELETE
+────────────────────────────────────────────────────────── */
+let pendingDeleteId = null;
+
+function promptDelete(id, name) {
+  pendingDeleteId = id;
+  $('#delete-name').text(name);
+  new bootstrap.Modal('#deleteModal').show();
+}
+
+$('#confirmDeleteBtn').on('click', function () {
+  if (!pendingDeleteId) return;
+  let data = loadData();
+  const m = data.find(d => d.id === pendingDeleteId);
+  data = data.filter(d => d.id !== pendingDeleteId);
+  saveData(data);
+  showToast(`Data <strong>${m?.nama}</strong> berhasil dihapus.`, 'warning');
+  bootstrap.Modal.getInstance('#deleteModal').hide();
+  pendingDeleteId = null;
+  refreshTable();
+  refreshDashboard();
+});
+
+function confirmClearAll() {
+  if (confirm('Yakin ingin menghapus SEMUA data mahasiswa? Tindakan ini tidak dapat dibatalkan!')) {
+    saveData([]);
+    showToast('Semua data berhasil dihapus.', 'warning');
+    refreshDashboard();
+  }
+}
+
+/* ──────────────────────────────────────────────────────────
+   EXPORT JSON
+────────────────────────────────────────────────────────── */
+function exportJSON() {
+  const data = loadData();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'data_mahasiswa.json';
+  a.click(); URL.revokeObjectURL(url);
+  showToast('Data berhasil diekspor sebagai JSON!', 'info');
+}
+
+/* ──────────────────────────────────────────────────────────
+   STATISTIK – Chart Bars (jQuery powered)
+────────────────────────────────────────────────────────── */
+function buildBarChart(containerId, dataObj, colors) {
+  const max = Math.max(...Object.values(dataObj), 1);
+  const keys = Object.keys(dataObj);
+  let html = '<div class="chart-bar-wrap">';
+  keys.forEach((k, i) => {
+    const val = dataObj[k];
+    const pct = Math.round((val / max) * 100);
+    const color = colors[i % colors.length];
+    html += `
+      <div class="chart-bar-item">
+        <span class="chart-bar-val">${val}</span>
+        <div class="chart-bar" style="height:${pct}%;background:${color}" data-target="${pct}"></div>
+        <span class="chart-bar-label">${k.length > 6 ? k.slice(0,6)+'…' : k}</span>
+      </div>`;
+  });
+  html += '</div>';
+  return html;
+}
+
+function refreshStatistik() {
+  const data = loadData();
+
+  // Per prodi
+  const prodiCount = {};
+  data.forEach(m => { prodiCount[m.prodi] = (prodiCount[m.prodi] || 0) + 1; });
+  $('#chart-prodi').html(buildBarChart('chart-prodi', prodiCount,
+    ['#1a56db','#16a34a','#f97316','#7c3aed','#dc2626']));
+
+  // Per angkatan
+  const angkCount = {};
+  data.forEach(m => { angkCount[m.angkatan] = (angkCount[m.angkatan] || 0) + 1; });
+  $('#chart-angkatan').html(buildBarChart('chart-angkatan',
+    Object.fromEntries(Object.entries(angkCount).sort()),
+    ['#16a34a','#1a56db','#f97316','#7c3aed','#dc2626','#ca8a04']));
+
+  // Per status
+  const statCount = {};
+  data.forEach(m => { statCount[m.status] = (statCount[m.status] || 0) + 1; });
+  $('#chart-status').html(buildBarChart('chart-status', statCount,
+    ['#16a34a','#ca8a04','#1a56db','#dc2626']));
+
+  // IPK Stats
+  const ipks = data.filter(m => m.ipk && m.ipk !== '-').map(m => parseFloat(m.ipk));
+  if (ipks.length > 0) {
+    const avg = (ipks.reduce((a,b) => a+b, 0) / ipks.length).toFixed(2);
+    const max = Math.max(...ipks).toFixed(2);
+    const min = Math.min(...ipks).toFixed(2);
+    $('#ipk-stats').html(`
+      <div class="row g-3">
+        <div class="col-4 text-center">
+          <div style="font-size:28px;font-weight:800;color:var(--primary)">${avg}</div>
+          <div style="font-size:12px;color:var(--muted);font-weight:600">Rata-rata</div>
+        </div>
+        <div class="col-4 text-center">
+          <div style="font-size:28px;font-weight:800;color:var(--success)">${max}</div>
+          <div style="font-size:12px;color:var(--muted);font-weight:600">Tertinggi</div>
+        </div>
+        <div class="col-4 text-center">
+          <div style="font-size:28px;font-weight:800;color:var(--danger)">${min}</div>
+          <div style="font-size:12px;color:var(--muted);font-weight:600">Terendah</div>
+        </div>
+      </div>
+      <div class="mt-3">
+        <div class="d-flex justify-content-between mb-1" style="font-size:12px">
+          <span>IPK Rata-rata</span><span>${avg} / 4.00</span>
+        </div>
+        <div class="progress" style="height:10px;border-radius:10px">
+          <div class="progress-bar bg-primary" style="width:${(avg/4*100).toFixed(0)}%;border-radius:10px"></div>
+        </div>
+      </div>
+    `);
+  } else {
+    $('#ipk-stats').html('<p class="text-muted text-center py-3">Belum ada data IPK</p>');
+  }
+}
+
+/* ──────────────────────────────────────────────────────────
+   INIT
+────────────────────────────────────────────────────────── */
+$(document).ready(function () {
+  refreshDashboard();
+});
+</script>
+</body>
+</html>

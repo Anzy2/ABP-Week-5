@@ -1,0 +1,41 @@
+[
+  {
+    "id": "709eb29f-3c37-4aab-8e64-cadd1effc652",
+    "nim": "2300001",
+    "nama": "Ahmad Fauzi",
+    "email": "ahmad@student.ac.id",
+    "nohp": "081234567890",
+    "prodi": "Teknik Informatika",
+    "angkatan": "2023",
+    "ipk": "3.75",
+    "status": "Aktif",
+    "alamat": "Jl. Merdeka No. 1, Purwokerto",
+    "createdAt": "2026-04-04T09:22:15.634Z"
+  },
+  {
+    "id": "f6320499-2955-4a10-9039-6c87e2f8e4d7",
+    "nim": "2300002",
+    "nama": "Budi Santoso",
+    "email": "budi@student.ac.id",
+    "nohp": "082345678901",
+    "prodi": "Sistem Informasi",
+    "angkatan": "2023",
+    "ipk": "3.50",
+    "status": "Aktif",
+    "alamat": "Jl. Sudirman No. 5, Purwokerto",
+    "createdAt": "2026-04-04T09:22:15.636Z"
+  },
+  {
+    "id": "e12fc72a-a61e-4707-b7bd-ffe6d4af40ab",
+    "nim": "2200015",
+    "nama": "Citra Dewi",
+    "email": "citra@student.ac.id",
+    "nohp": "083456789012",
+    "prodi": "Manajemen Informatika",
+    "angkatan": "2022",
+    "ipk": "3.90",
+    "status": "Aktif",
+    "alamat": "Jl. Diponegoro No. 10, Banyumas",
+    "createdAt": "2026-04-04T09:22:15.636Z"
+  }
+]
